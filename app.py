@@ -39,17 +39,30 @@ st.markdown("""
 # ── 변환 함수 ────────────────────────────────────────────────
 
 def _darken_graphics(text):
+    # 밝은색(배경) → 어두운 BG, 어두운색(밑줄/선 등) → 흰색
     text = re.sub(
         r'\b(\d+(?:\.\d+)?)\s+g\b',
-        lambda m: f'{BG} g' if float(m.group(1)) >= 0.5 else m.group(0),
+        lambda m: f'{BG} g' if float(m.group(1)) >= 0.5 else '1 g',
+        text
+    )
+    text = re.sub(
+        r'\b(\d+(?:\.\d+)?)\s+G\b',
+        lambda m: f'{BG} G' if float(m.group(1)) >= 0.5 else '1 G',
         text
     )
     def _rg(mo):
         avg = (float(mo.group(1)) + float(mo.group(2)) + float(mo.group(3))) / 3
-        return f'{BG} {BG} {BG} rg' if avg >= 0.5 else mo.group(0)
+        return f'{BG} {BG} {BG} rg' if avg >= 0.5 else '1 1 1 rg'
     text = re.sub(
         r'\b(\d+(?:\.\d+)?)\s+(\d+(?:\.\d+)?)\s+(\d+(?:\.\d+)?)\s+rg\b',
         _rg, text
+    )
+    def _RG(mo):
+        avg = (float(mo.group(1)) + float(mo.group(2)) + float(mo.group(3))) / 3
+        return f'{BG} {BG} {BG} RG' if avg >= 0.5 else '1 1 1 RG'
+    text = re.sub(
+        r'\b(\d+(?:\.\d+)?)\s+(\d+(?:\.\d+)?)\s+(\d+(?:\.\d+)?)\s+RG\b',
+        _RG, text
     )
     return text
 
